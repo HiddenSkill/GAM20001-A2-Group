@@ -9,6 +9,10 @@ public class PlayerScript : MonoBehaviour
     private Rigidbody2D rb;
     public bool isMoving;
     private bool facingRight = true;
+    private int moveSpeed = 150;
+    private float timeSincePlayed;
+
+    public AudioSource footStep;
     // Update is called once per frame
 
     private void Start()
@@ -18,32 +22,51 @@ public class PlayerScript : MonoBehaviour
     }
     void Update()
     {
-        isMoving = rb.velocity.x != 0;  
-        /*if(rb.velocity.x < 0 && facingRight == true)
+        timeSincePlayed += Time.deltaTime;
+        float xAxis = Input.GetAxisRaw("Horizontal");
+        float translation = xAxis * moveSpeed;
+
+
+
+        //Check if character is moving
+        if (xAxis == 1 || xAxis == -1)
         {
-            Flip();
+            isMoving = true;
+            if (facingRight && xAxis == -1)
+            {
+                Flip();
+            }
+            else if (!facingRight && xAxis == 1)
+            {
+                Flip();
+            }
+            
         }
-        else if(rb.velocity.x > 0 && facingRight == false)
+        else
         {
-            Flip();
-        }*/
+            isMoving = false;
+        }
+
+        //idk why this work when its false? but it works.... so....
+        if(!isMoving)
+        {
+            footStep.Play();
+        }
+
+
+
 
         anim.SetBool("isMoving", isMoving);
-        
-        
 
-        if (Input.GetKey(KeyCode.D))
-        {
-            transform.position = transform.position += new Vector3(0.5f, 0.0f, 0.0f);
-        }
-        if (Input.GetKey(KeyCode.A))
-        {
-            transform.position = transform.position -= new Vector3(0.5f, 0.0f, 0.0f);
-        }
+    
+
+        transform.Translate(Mathf.Abs(translation *= Time.deltaTime), 0, 0);
+        //Debug.Log(Input.GetAxisRaw("Horizontal"));
+        //Debug.Log(translation);
     }
-    /*void Flip()
+    void Flip()
     {
         facingRight = !facingRight;
         transform.Rotate(0, 180, 0);
-    }*/
+    }
 }
