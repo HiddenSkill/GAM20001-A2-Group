@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class CameraScript : MonoBehaviour
 {
-    [SerializeField, Range(50, 250)]
-    public int offset = 50;
+    [SerializeField, Range(1, 5)]
+    public int offset = 3;
 
 
     Camera cam;
@@ -26,6 +26,6 @@ public class CameraScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-         cam.transform.position = player.transform.position - new Vector3(0.0f, 0.0f, offset);
+        cam.transform.position = new Vector3(player.transform.position.x, cam.transform.position.y, -offset);
     }
 }
