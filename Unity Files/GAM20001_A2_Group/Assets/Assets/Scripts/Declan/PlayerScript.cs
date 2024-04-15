@@ -8,6 +8,7 @@ public class PlayerScript : MonoBehaviour
 
     private Animator anim;
     private Rigidbody2D rb;
+    private Rigidbody2D bulletRB;
     public bool isMoving;
     private bool facingRight = true;
     private int moveSpeed = 5;
@@ -16,24 +17,34 @@ public class PlayerScript : MonoBehaviour
     private float jump = 175f;
 
     public AudioSource footStep;
+    public AudioSource jumpSound;
 
     public bool isOnGround;
+    public bool playerAttack;
     public BoxCollider2D playerCollider;
     public LayerMask layerMask;
+    public Transform spawnPoint;
 
     private RaycastHit2D hit;
+
+    public GameObject bullet;
+    private float bulletSpeed = 15.0f;
+    private float fireRate = 2f;
+    private float timeSinceFired = 0f;
     private void Start()
     {
         anim = GetComponentInChildren<Animator>();
         rb = GetComponent<Rigidbody2D>();
         GameObject floor = GameObject.FindGameObjectWithTag("Floor");
         BoxCollider2D playerCollider = GetComponent<BoxCollider2D>();
+        
     }
     void FixedUpdate()
     {
         timeSincePlayed += Time.deltaTime;
         float xAxis = Input.GetAxisRaw("Horizontal");
         float translation = xAxis * moveSpeed;
+        spawnPoint = spawnPoint.transform;
 
 
 
@@ -60,12 +71,13 @@ public class PlayerScript : MonoBehaviour
 
 
         isOnGround = isGrounded();
-        Debug.Log(Input.GetAxis("Jump"));
+        //Debug.Log(Input.GetAxis("Jump"));
 
 
         if (isOnGround && Input.GetAxis("Jump") == 1)
         {
             rb.AddForce(Vector2.up * jump * Time.deltaTime , ForceMode2D.Impulse);
+            jumpSound.Play();
         }
 
         //idk why this work when its false? but it works.... so....
@@ -74,11 +86,23 @@ public class PlayerScript : MonoBehaviour
             footStep.Play();
         }
 
-        
+        if (isOnGround && Input.GetAxis("Fire2") == 1)
+        {
+            
+            attack();
+        }
+        else
+        {
+            playerAttack = false;
+        }
+
+
+
 
 
         anim.SetBool("isMoving", isMoving);
         anim.SetBool("isOnGround", isOnGround);
+        anim.SetBool("attack", playerAttack);
 
     
 
@@ -108,6 +132,26 @@ public class PlayerScript : MonoBehaviour
             return false;
         }
         
+    }
+    void attack()
+    {
+        if (Time.time >= timeSinceFired)
+        {
+            playerAttack = true;
+            GameObject spawnedBullet = Instantiate(bullet, spawnPoint.position, spawnPoint.rotation);
+            Rigidbody2D bulletRB = spawnedBullet.GetComponent<Rigidbody2D>();
+            bulletRB.velocity = spawnPoint.right * bulletSpeed;
+
+            timeSinceFired = Time.time + 1f / fireRate;
+            Debug.Log("Bullet Velocity is: " + bulletRB.velocity);
+
+            if (bulletRB == null)
+            {
+                Debug.Log("No rigidbody found on bullet");
+                
+            }
+        }
+
     }
 
 }

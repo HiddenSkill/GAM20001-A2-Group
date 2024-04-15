@@ -10,12 +10,15 @@ public class CameraScript : MonoBehaviour
 
     Camera cam;
     GameObject player;
-    
+    BoxCollider2D playerCollider;
+
+
 
 
     void Awake()
     {
         player = GameObject.FindGameObjectWithTag("Player");
+        playerCollider = player.GetComponent<BoxCollider2D>();
         cam = Camera.main;
     }
     
@@ -26,6 +29,6 @@ public class CameraScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        cam.transform.position = new Vector3(player.transform.position.x, cam.transform.position.y, -offset);
+        cam.transform.position = new Vector3(playerCollider.transform.position.x, playerCollider.transform.position.y, -offset);
     }
 }
